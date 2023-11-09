@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
+import requests
 
 app = Flask(__name__)
 
@@ -37,6 +38,23 @@ def perfil_email():
     return f"<h1>Email: {email} Senha: {senha}</h1>"
 
 
+@app.route("/ver-cep/<cep>", methods=["GET"])
+def ver_cep(cep):
+    ifce_maracanau = '61939-140'
+    ifce_fortaleza = '60040-531'
+    ifce_maranguape = '61940-750'
+
+    if cep == 'maranguape':
+        endereço = requests.get(f"http://viacep.com.br/ws/{ifce_maranguape}/json")
+    elif cep == 'maracanau':
+        endereço = requests.get(f"http://viacep.com.br/ws/{ifce_maracanau}/json")
+    else:
+        endereço = requests.get(f"http://viacep.com.br/ws/{ifce_fortaleza}/json")
+    
+    return endereço.content
+
+
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -45,8 +63,9 @@ def login():
     if senha == '123456':
         return render_template('profile.html', email=email)
     else:
-        return 'Acesso não autorizado!!!'
-        
+        return 'Acesso não autorizado!!!'        
+
+
 
 
 
